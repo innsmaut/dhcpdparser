@@ -10,12 +10,12 @@
         <script>
             <?php
             $i = 0;
-            $rawLog = fopen("C:/Users/innsmaut/Desktop/newbase.txt", "r") or die ("Unable to open");
+            $rawLog = fopen("C:/Users/innsmaut/Desktop/dhcpd2.txt", "r") or die ("Unable to open");
 
             while (!feof($rawLog)) {
                 $curStr = fgets($rawLog);
 
-                if ($curStr[39]=='o' && !($curStr[44]=='.' && $curStr[42]=='1')){
+                if ($curStr[39]=='o' && !($curStr[44]=='.' && $curStr[42]=='1') && !($curStr[45]=='2' && $curStr[43]=='9' && $curStr[42]=='1')){
                     $to = strpos($curStr, ' to ');
                     $ipadd = trim(substr($curStr, 42, $to-41));
                     $macadd = trim(substr($curStr, $to+4, 17));
@@ -43,14 +43,15 @@
 
             }
             $p = 0;
-            for ($x=0; $x<$i; $x++){
-                foreach ($result as $macadd=>$ipadd){
+            foreach ($result as $macadd=>$ipadd){
+                for ($x=0; $x<$i; $x++){
                     if ($macadd == $clientMac[$x]){
                         $final[$p][0] = $switchIp[$x];
                         $final[$p][1] = $switchPort[$x];
                         $final[$p][2] = $clientMac[$x];
                         $final[$p][3] = $ipadd;
                         $p++;
+                        $macadd = NULL;
                     }
                 }
             }
