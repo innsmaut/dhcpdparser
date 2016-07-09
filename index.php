@@ -10,10 +10,10 @@
         <script>
             <?php
                 $urls = array(
-                "C:/Users/innsmaut/Desktop/dhcpd1.txt",
+                "C:/Users/innsmaut/Desktop/dhcpd2.txt",
                 "C:/Users/innsmaut/Desktop/dhcpd1.txt"
                 );
-                //$urls = array("C:/Users/innsmaut/Desktop/test.txt");
+                $urls = array("C:/Users/innsmaut/Desktop/test.txt");
                     for ($i=0;$i<count($urls);$i++){
                         $parseRes = dhcpParse($urls[$i]);
                         foreach ($parseRes as $macadd=>$macadd) {
@@ -31,7 +31,7 @@
                         if($curStr[0]=='i' && $curStr[5]=='a') { $caser = 1; 
                         } elseif ($curStr[2]=='n'){ $caser = 2; 
                         } elseif ($curStr[0]=='i' && $curStr[5]=='p') { $caser = 3;
-                        } elseif ($curStr[4]=='o' && !($curStr[9]=='.' && $curStr[7]=='1') && !($curStr[9]=='2' && $curStr[8]=='9' && $curStr[7]=='1')) { $caser = 4;}
+                        } elseif ($curStr[4]=='o' && !($curStr[9]=='.' && $curStr[7]=='1') && !($curStr[9]=='2' && $curStr[8]=='9')) { $caser = 4;}
 
                         if ($caser == 1) {
                             $curStr = trim(substr($curStr, 11));
@@ -85,6 +85,24 @@
                 echo "\n".$x.". ".$merged[$macadd][0]."     p:".$merged[$macadd][1]."    ".$macadd."    ".$merged[$macadd][2]."<br>";
                 $x++;
             }
+
+            $filePush = fopen("C:/Users/innsmaut/Desktop/SaltovkaUserList.xml", "w");
+            fwrite($filePush, '<?xml version="1.0" encoding="UTF-8"?>');
+            fwrite($filePush, '<userstable>');
+
+            $x = 1;
+            foreach ($merged as $macadd=>$macadd) {
+                fwrite($filePush, ' <user id="'.$x.'">');
+                fwrite($filePush, '  <switch>'.$merged[$macadd][0].'</switch>');
+                fwrite($filePush, '  <port>'.$merged[$macadd][1].'</port>');
+                fwrite($filePush, '  <usermac>'.$macadd.'</usermac>');
+                fwrite($filePush, '  <userip>'.$merged[$macadd][2].'</userip>');
+                fwrite($filePush, ' </user>');
+                $x++;
+            }
+            fwrite($filePush, '</userstable>');
+
+            fclose($filePush);
         ?>
     </body>
 </html>
