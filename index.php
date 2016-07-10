@@ -111,16 +111,13 @@
                         $curLogin = substr($curStr, 0, -(strlen($curStr) - $cutedge3));
                         $cutedge4 = strpos($curStr, '      ');
                         $curAcc = substr($curStr, strlen($curLogin) + 20, -(strlen($curStr) - $cutedge4));
-
-                        $swapmerge[$curIp][3] = iconv("Windows-1251", "UTF-8", $curLogin);
-                        $swapmerge[$curIp][4] = iconv("Windows-1251", "UTF-8", $curAcc);
                         } 
                     }
 
                     fclose($rawLog);
 
             $filePush = fopen("C:/Users/innsmaut/Desktop/SaltovkaUserList.xml", "w");
-            fwrite($filePush, '<?xml version="1.0" encoding="UTF-8"?>');
+            fwrite($filePush, '<?xml version="1.0" encoding="Windows-1251"?>');
             fwrite($filePush, '<userstable>');
 
             $x = 1;
