@@ -111,6 +111,9 @@
                         $curLogin = substr($curStr, 0, -(strlen($curStr) - $cutedge3));
                         $cutedge4 = strpos($curStr, '      ');
                         $curAcc = substr($curStr, strlen($curLogin) + 20, -(strlen($curStr) - $cutedge4));
+
+                        $swapmerge[$curIp][3] = $curLogin;
+                        $swapmerge[$curIp][4] = $curAcc;
                         } 
                     }
 
