@@ -2,7 +2,7 @@
 
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
+        <meta charset="utf-8/Windows-1251" />
         <title></title>
     </head>
     <body>
@@ -13,7 +13,6 @@
                 "C:/Users/innsmaut/Desktop/dhcpd2.txt",
                 "C:/Users/innsmaut/Desktop/dhcpd1.txt"
                 );
-                $urls = array("C:/Users/innsmaut/Desktop/test.txt");
                     for ($i=0;$i<count($urls);$i++){
                         $parseRes = dhcpParse($urls[$i]);
                         foreach ($parseRes as $macadd=>$macadd) {
@@ -74,35 +73,80 @@
 
                     }
 
+                    fclose($urlParse);
                     return $final;
-                    fclose($result);
                 }
-            ?>
-        </script>
-        <?php
-            $x = 1;
+
             foreach ($merged as $macadd=>$macadd) {
-                echo "\n".$x.". ".$merged[$macadd][0]."     p:".$merged[$macadd][1]."    ".$macadd."    ".$merged[$macadd][2]."<br>";
-                $x++;
+                $swapmerge[$merged[$macadd][2]][0] = $merged[$macadd][0];
+                $swapmerge[$merged[$macadd][2]][1] = $merged[$macadd][1];
+                $swapmerge[$merged[$macadd][2]][2] = $macadd;
+                $swapmerge[$merged[$macadd][2]][3] = '';
+                $swapmerge[$merged[$macadd][2]][4] = '';
             }
+
+
+               $urls = "C:/Users/innsmaut/Desktop/client_list.txt";
+
+                    $rawLog = fopen($urls, "r") or die ("Unable to open");
+
+                    while (!feof($rawLog)) {
+
+                        $curBase = fgets($rawLog);
+                        $curStr = substr($curBase, 200, 150);
+                        $cutedge = strpos($curStr, '</b><br><span > ');
+                        if ($cutedge == FALSE) { continue;};
+                        $cutedge2 = strlen($curStr) - strpos($curStr, '/32</span><br>');
+                        $curIp = trim(substr($curStr, $cutedge + 16, -$cutedge2));
+                        
+                        if (strpos($curBase, '80.77') && strpos($curBase, '188.247')) {
+                        $curIp = substr($curBase, strpos($curBase, '188.247'));
+                        $curIp = trim(substr($curIp, 0, -(strlen($curIp) - strpos($curIp, '/'))));  
+                        }
+
+                        if ($swapmerge[$curIp]) {
+
+                        $curStr = substr($curBase, 19, 60);
+                        $cutedge3 = strpos($curStr, '</');
+                        $curLogin = substr($curStr, 0, -(strlen($curStr) - $cutedge3));
+                        $cutedge4 = strpos($curStr, '      ');
+                        $curAcc = substr($curStr, strlen($curLogin) + 20, -(strlen($curStr) - $cutedge4));
+
+                        $swapmerge[$curIp][3] = iconv("Windows-1251", "UTF-8", $curLogin);
+                        $swapmerge[$curIp][4] = iconv("Windows-1251", "UTF-8", $curAcc);
+                        } 
+                    }
+
+                    fclose($rawLog);
 
             $filePush = fopen("C:/Users/innsmaut/Desktop/SaltovkaUserList.xml", "w");
             fwrite($filePush, '<?xml version="1.0" encoding="UTF-8"?>');
             fwrite($filePush, '<userstable>');
 
             $x = 1;
-            foreach ($merged as $macadd=>$macadd) {
+            foreach ($swapmerge as $macadd=>$macadd) {
                 fwrite($filePush, ' <user id="'.$x.'">');
-                fwrite($filePush, '  <switch>'.$merged[$macadd][0].'</switch>');
-                fwrite($filePush, '  <port>'.$merged[$macadd][1].'</port>');
-                fwrite($filePush, '  <usermac>'.$macadd.'</usermac>');
-                fwrite($filePush, '  <userip>'.$merged[$macadd][2].'</userip>');
+                fwrite($filePush, '  <switch>'.$swapmerge[$macadd][0].'</switch>');
+                fwrite($filePush, '  <port>'.$swapmerge[$macadd][1].'</port>');
+                fwrite($filePush, '  <usermac>'.$swapmerge[$macadd][2].'</usermac>');
+                fwrite($filePush, '  <userip>'.$macadd.'</userip>');
+                fwrite($filePush, '  <userlogin>'.$swapmerge[$macadd][3].'</userlogin>');
+                fwrite($filePush, '  <useracc>'.$swapmerge[$macadd][4].'</useracc>');
                 fwrite($filePush, ' </user>');
                 $x++;
             }
             fwrite($filePush, '</userstable>');
 
             fclose($filePush);
+
+            ?>
+        </script>
+        <?php
+            $x = 1;
+            foreach ($swapmerge as $macadd=>$macadd) {
+                echo "\n".$x.". ".$swapmerge[$macadd][0]."     p:".$swapmerge[$macadd][1]."    ".$macadd."    ".$swapmerge[$macadd][2]."   ".$swapmerge[$macadd][3]."    ".$swapmerge[$macadd][4]."<br>";
+                $x++;
+            }
         ?>
     </body>
 </html>
